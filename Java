@@ -1,0 +1,24 @@
+@RestController
+public class TrackingController {
+
+    @PostMapping("/generate_link")
+    public String generateLink(@RequestBody Map<String, Object> body) {
+        String linkId = UUID.randomUUID().toString().substring(0, 8);
+        String fullLink = "http://yourdomain.com/track/" + linkId;
+        
+        // Store link details in DB or memory
+        // ...
+        return fullLink;
+    }
+
+    @GetMapping("/track/{linkId}")
+    public ResponseEntity<Object> trackLink(@PathVariable String linkId, HttpServletRequest request) {
+        String ipAddress = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+        
+        // Store access history in DB or memory
+        // ...
+        
+        return new ResponseEntity<>("IP: " + ipAddress + ", User-Agent: " + userAgent, HttpStatus.OK);
+    }
+}
