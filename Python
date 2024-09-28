@@ -1,0 +1,13 @@
+@app.route('/track_location', methods=['POST'])
+def track_location():
+    location_data = request.json
+    # Add location data to the access history (you'll need to identify the link)
+    # For simplicity, we're assuming there's only one link being tracked
+
+    link_id = "your_link_id"  # Extract from URL or headers
+    link_data[link_id]['access_history'][-1].update({
+        'latitude': location_data['latitude'],
+        'longitude': location_data['longitude'],
+    })
+
+    return jsonify({'status': 'Location received'})
