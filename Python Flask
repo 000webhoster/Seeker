@@ -1,0 +1,47 @@
+from flask import Flask, request, jsonify
+import random, string
+from datetime import datetime
+
+app = Flask(__name__)
+
+# In-memory storage (you could use a database here)
+link_data = {}
+
+def generate_link_id():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+@app.route('/generate_link', methods=['POST'])
+def generate_link():
+    # Generate unique link
+    link_id = generate_link_id()
+    full_link = f"http://yourdomain.com/track/{link_id}"
+
+    # Store link with metadata
+    link_data[link_id] = {
+        'sent_to': request.json['sent_to'],
+        'generated_at': datetime.now(),
+        'access_history': []
+    }
+    return jsonify({'link': full_link})
+
+@app.route('/track/<link_id>', methods=['GET'])
+def track_link(link_id):
+    if link_id not in link_data:
+        return "Link not found", 404
+
+    ip_address = request.remote_addr  # Track IP address
+    user_agent = request.headers.get('User-Agent')
+
+    # Log access data
+    access_entry = {
+        'timestamp': datetime.now(),
+        'ip': ip_address,
+        'user_agent': user_agent,
+        # Location will be sent from the frontend
+    }
+    link_data[link_id]['access_history'].append(access_entry)
+
+    return jsonify(access_entry)
+
+if __name__ == '__main__':
+    app.run(debug=True)
