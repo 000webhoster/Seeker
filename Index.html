@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking</title>
+</head>
+<body>
+    <h1>Tracking User Location</h1>
+    <p id="location">Requesting location...</p>
+
+    <script>
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                // Send location data to server
+                const locationData = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+
+                fetch('/track_location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(locationData),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("location").innerHTML = "Location shared.";
+                });
+            });
+        } else {
+            document.getElementById("location").innerHTML = "Geolocation not supported.";
+        }
+    </script>
+</body>
+</html>
